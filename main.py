@@ -18,22 +18,26 @@ st.subheader(f'{option} for the next {days} days in {place}')
 #     return date,temperature
 
 if place:
-    filter_data = get_data(place, days)
+    try:
+        filter_data = get_data(place, days)
 
-    if option == 'Temperature':
-        temperature = [dict['main']['temp'] for dict in filter_data]
-        dates = [dict['dt_txt'] for dict in filter_data]
-        figure = px.line(x = dates,y = temperature,labels={'x': 'Dates', 'y': 'Temperature'})
-        st.plotly_chart(figure)
+        if option == 'Temperature':
+            temperature = [dict['main']['temp'] / 10 for dict in filter_data]
+            dates = [dict['dt_txt'] for dict in filter_data]
+            figure = px.line(x = dates,y = temperature,labels={'x': 'Dates', 'y': 'Temperature'})
+            st.plotly_chart(figure)
 
-    if option == 'Sky':
-        images = {
-            'Clear': 'images/clear.png',
-            'Clouds': 'images/cloud.png',
-            'Rain': 'images/rain.png',
-            'Snow': 'images/snow.png'
-        }
-        sky_condition = [dict['weather'][0]['main'] for dict in filter_data]
-        image_path = [images[condition] for condition in sky_condition]
-        print(image_path)
-        st.image(image_path, width=115)
+        if option == 'Sky':
+            images = {
+                'Clear': 'images/clear.png',
+                'Clouds': 'images/cloud.png',
+                'Rain': 'images/rain.png',
+                'Snow': 'images/snow.png'
+            }
+            sky_condition = [dict['weather'][0]['main'] for dict in filter_data]
+            image_path = [images[condition] for condition in sky_condition]
+            print(image_path)
+            st.image(image_path, width=115)
+
+    except KeyError:
+        st.write('Can not get data, please check your input')
